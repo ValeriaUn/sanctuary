@@ -1,0 +1,53 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+use yii\base\Model;
+use yii\data\ActiveDataProvider;
+use app\models\Order;
+
+class OrderSearch extends Order
+{
+    public function rules()
+    {
+        return [
+            [['id', 'usersId', 'bookId', 'amount'], 'integer']]
+    }
+
+    public function scenarios()
+    {
+        return Model::scenarios();
+    }
+
+
+    public function search($params)
+    {
+        $query = Order::find();
+
+        $dataProvider = new ActiveDataProvider([
+            'query' => $query,
+        ]);
+
+        $this->load($params);
+
+        if (!$this->validate()) {
+
+            return $dataProvider;
+        }
+
+        $query->andFilterWhere([
+            'id' => $this->id,
+            'usersId' => $this->usersId,
+            'bookId' => $this->bookId,
+            'amount' => $this->amount
+        ]);
+
+        $query->andFilterWhere(['like', 'id', $this->id])
+            ->andFilterWhere(['like', 'userId', $this->usersId])
+            ->andFilterWhere(['like', 'bookId', $this->bookId])
+            ->andFilterWhere(['like', 'amount', $this->amount]);
+            
+        return $dataProvider;
+    }
+}
